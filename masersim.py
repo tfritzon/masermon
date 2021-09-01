@@ -15,8 +15,11 @@ cmd = ""
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     while True:
         c = ser.read(size=1)
+        print("C=", c)
+        if c == 'D':
+            cmd = ""
         ser.write(c)
         cmd += c
+        print(cmd)
         if len(cmd) == 3:
-            ser.write(("%02x\r\n" % 42).encode())
-            cmd = ""
+            ser.write(("x%02x\r\n" % 42).encode())
