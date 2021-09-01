@@ -25,4 +25,4 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
             r = poll_chan(ser, chan)
             # TODO: save in DB
             print(r)
-        time.sleep(1000)
+            time.sleep(1000)
