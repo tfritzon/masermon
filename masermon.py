@@ -5,10 +5,10 @@ import sys
 SERIALDEVICE = "/dev/ttyUSB0"
 BAUDRATE = 9600
 
-if len(sys.argv > 1):
+if len(sys.argv) > 1:
     SERIALDEVICE = sys.argv[1]
 
-if len(sys.argv > 2):
+if len(sys.argv) > 2:
     BAUDRATE = int(sys.argv[2])
 
 
