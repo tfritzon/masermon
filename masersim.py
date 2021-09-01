@@ -16,7 +16,7 @@ with serial.Serial(SERIALDEVICE, BAUDRATE) as ser:
     while True:
         c = ser.read(1)
         ser.write(c)
-        cmd.append(c)
+        cmd += c
         if len(cmd) == 3:
             ser.write(("%02x" % 42).encode())
             cmd = ""
