@@ -18,5 +18,5 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
         ser.write(c)
         cmd += c
         if len(cmd) == 3:
-            ser.write(("%02x" % 42).encode())
+            ser.write(("%02x\r\n" % 42).encode())
             cmd = ""
