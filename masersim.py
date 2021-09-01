@@ -14,7 +14,7 @@ cmd = ""
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     while True:
-        c = ser.read()
+        c = ser.read(size=1)
         ser.write(c)
         cmd += c
         if len(cmd) == 3:
