@@ -12,7 +12,7 @@ if len(sys.argv) > 2:
 
 cmd = ""
 
-with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=0) as ser:
+with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     while True:
         c = ser.read()
         ser.write(c)
