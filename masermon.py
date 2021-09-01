@@ -17,8 +17,7 @@ def poll_chan(ser, chan):
     for c in s:
         ser.write(c.encode())
         ser.read()
-    r = ser.read_all()
-    return int(r, 16)
+    return ser.read_all()
 
 with serial.Serial(SERIALDEVICE, BAUDRATE) as ser:
     while True:
