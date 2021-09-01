@@ -19,7 +19,7 @@ def poll_chan(ser, chan):
         ser.read()
     return ser.read_all()
 
-with serial.Serial(SERIALDEVICE, BAUDRATE) as ser:
+with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=0) as ser:
     while True:
         for chan in range(0,35):
             r = poll_chan(ser, chan)
