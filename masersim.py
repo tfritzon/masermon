@@ -22,4 +22,4 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
         cmd += c
         print(cmd)
         if len(cmd) == 3:
-            ser.write(("x%02x\r\n" % 42).encode())
+            ser.write(("%02x\r\n" % 42).encode())
