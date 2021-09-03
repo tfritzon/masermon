@@ -193,4 +193,6 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
             }
         ]
         client.write_points(json_body)
+        #result = client.query("select OCXO from maserdata")
+        #print("Result: {0}", format(result))
         time.sleep(10)
