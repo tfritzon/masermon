@@ -5,14 +5,18 @@ from influxdb import InfluxDBClient
 import datetime
 import json
 
+MASERID = "maserdata"
 SERIALDEVICE = "/dev/ttyUSB0"
 BAUDRATE = 9600
 
 if len(sys.argv) > 1:
-    SERIALDEVICE = sys.argv[1]
+    MASERID = sys.argv[1]
 
 if len(sys.argv) > 2:
-    BAUDRATE = int(sys.argv[2])
+    SERIALDEVICE = sys.argv[2]
+
+if len(sys.argv) > 3:
+    BAUDRATE = int(sys.argv[3])
 
 channels = [
     { "chan": 0,    "name": "InputA_U",       "signed": -128,   "scale": 0.230,   "offset": 0    },
@@ -79,7 +83,7 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
                 print("Error converting string: %s", r)
         json_body = [
             {
-                "measurement": "EFOS10",
+                "measurement": MASERID,
                 "tags": {
                     "masetype": "EFOS-B",
                     "maser": "EFOS10"
