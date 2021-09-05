@@ -29,7 +29,10 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
         timestamp = datetime.datetime.utcnow().isoformat()
         for chan in range(0,35):
             r = poll_chan(ser, chan)
-            reading = int(r,16)
+            try:
+                reading = int(r,16)
+            except:
+                print("Error converting string: %s", r)
             if chan < 32:
                 signed = True
             else:
