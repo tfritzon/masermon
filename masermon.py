@@ -65,7 +65,13 @@ def poll_chan(ser, chan):
     for c in s:
         ser.write(c.encode())
         r = ser.read()
-    return ser.read(size=4)
+    for i in range(0, 5):
+        try:
+            r = int(ser.read(size=4), 16)
+            return (r, False)
+        except:
+            pass
+    return (-1, True)
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     client = InfluxDBClient(host='localhost', port=8086)
@@ -75,12 +81,9 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
         for channel in channels:
-            r = poll_chan(ser, channel['chan'])
-            try:
-                reading = int(r,16)
+            r, e = poll_chan(ser, channel['chan'])
+            if not e:
                 fields[channel['name']] = (reading + channel['signed']) * channel['scale'] + channel['offset']
-            except:
-                print("Error converting string: %s", r)
         json_body = [
             {
                 "measurement": MASERID,
