@@ -81,7 +81,7 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
         for channel in channels:
-            v, e = poll_chan(ser, channel['chan'])
+            val, err = poll_chan(ser, channel['chan'])
             if not e:
                 fields[channel['name']] = (v + channel['signed']) * channel['scale'] + channel['offset']
         json_body = [
