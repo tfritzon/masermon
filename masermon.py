@@ -82,8 +82,8 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
         timestamp = datetime.datetime.utcnow().isoformat()
         for channel in channels:
             val, err = poll_chan(ser, channel['chan'])
-            if not e:
-                fields[channel['name']] = (v + channel['signed']) * channel['scale'] + channel['offset']
+            if not err:
+                fields[channel['name']] = (val + channel['signed']) * channel['scale'] + channel['offset']
         json_body = [
             {
                 "measurement": MASERID,
