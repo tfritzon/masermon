@@ -72,7 +72,6 @@ def poll_chan(ser, chan):
             return (r, False)
         except:
             print("Line Noise:", s)
-            pass
     return (-1, True)
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
