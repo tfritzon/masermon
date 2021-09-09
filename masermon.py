@@ -67,9 +67,11 @@ def poll_chan(ser, chan):
         r = ser.read()
     for i in range(0, 5):
         try:
-            r = int(ser.read(size=4), 16)
+            s = ser.read(size=4)
+            r = int(s, 16)
             return (r, False)
         except:
+            print("Line Noise:", s)
             pass
     return (-1, True)
 
