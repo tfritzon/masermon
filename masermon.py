@@ -62,19 +62,20 @@ channels = [
     
 def poll_chan(ser, chan):
     s = "D%02d" % chan
-    for c in s:
-        ser.write(c.encode())
-        r = ser.read()
     for i in range(0, 5):
         try:
+            for c in s:
+                ser.write(c.encode())
+                r = ser.read()
             s = ser.read(size=4)
-            r = int(s, 16)
-            return (r, False)
+            if len(s) == 4:
+                r = int(s, 16)
+                return (r, False)
         except:
             print("Line Noise:", s)
     return (-1, True)
 
-with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
+with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
     client = InfluxDBClient(host='localhost', port=8086)
     client.create_database('EFOStest')
     client.switch_database('EFOStest')
