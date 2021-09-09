@@ -71,6 +71,8 @@ def poll_chan(ser, chan):
             if len(s) == 4:
                 r = int(s, 16)
                 return (r, False)
+            else:
+                print("Timeout")
         except:
             print("Line Noise:", s)
     return (-1, True)
