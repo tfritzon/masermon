@@ -67,10 +67,11 @@ def poll_chan(ser, chan):
         r = ser.read()
     for i in range(0, 5):
         try:
-            r = int(ser.read(size=4), 16)
+            s = ser.read(size=4)
+            r = int(s, 16)
             return (r, False)
         except:
-            pass
+            print("Line Noise:", s)
     return (-1, True)
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=None) as ser:
