@@ -61,15 +61,15 @@ channels = [
 #    channels = json.loads(s)
     
 def poll_chan(ser, chan):
-    s = "D%02d" % chan
+    cmd = "D%02d" % chan
     for i in range(0, 5):
         try:
-            for c in s:
+            for c in cmd:
                 ser.write(c.encode())
                 r = ser.read()
-                sys.stderr.write(r)
+                print(r, end='')
             s = ser.read(size=4)
-            sys.stderr.write("[" + s + "]")
+            print("[" + s + "]", end='')
             if len(s) == 4:
                 r = int(s, 16)
                 return (r, False)
