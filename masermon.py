@@ -74,7 +74,7 @@ def poll_chan(ser, chan):
             else:
                 print("Timeout")
         except:
-            print("%s Channel %s Line Noise: %s" , (datetime.datetime.utcnow().isoformat(), chan, s))
+            print("%s Channel %s Line Noise: %s" % (datetime.datetime.utcnow().isoformat(), chan, s))
     return (-1, True)
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
