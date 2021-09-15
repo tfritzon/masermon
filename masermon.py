@@ -60,19 +60,18 @@ channels = [
 #with open('EFOS14.json') as f:
 #    s = f.read()
 #    channels = json.loads(s)
-    
+
 def poll_chan(ser, chan):
     cmd = "D%02d" % chan
     for i in range(0, 5):
+        buf = ''
         try:
             for c in cmd:
                 ser.write(c.encode())
-                r = ser.read()
-                print(r.decode('ascii'), end='')
-            print(': ', end='')
+                buf += ser.read()
             s = ser.read(size=4)
+            buf += b'[' + s + b']'
             if s.endswith((b'\r', b'\n')):
-                print("[" + s.decode('ascii').strip() + "]")
                 if len(s) == 4:
                     r = int(s, 16)
                     return (r, False)
@@ -82,6 +81,8 @@ def poll_chan(ser, chan):
                 print("ERROR: malformed response", s)
         except:
             print("%s Channel %s Line Noise: %s" % (datetime.datetime.utcnow().isoformat(), chan, s))
+            print("Trace:")
+            print(buf)
             traceback.print_exc()
             time.sleep(0.01)
     return (-1, True)
