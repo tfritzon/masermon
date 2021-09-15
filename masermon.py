@@ -68,9 +68,10 @@ def poll_chan(ser, chan):
             for c in cmd:
                 ser.write(c.encode())
                 r = ser.read()
-                print(r, end='')
+                print(r.decode('ascii'), end='')
+            print()
             s = ser.read(size=4)
-            print("[" + s + "]", end='')
+            print("[" + s.decode('ascii') + "]")
             if len(s) == 4:
                 r = int(s, 16)
                 return (r, False)
