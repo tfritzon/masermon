@@ -71,7 +71,10 @@ def poll_chan(ser, chan):
                 print(r.decode('ascii'), end='')
             print()
             s = ser.read(size=4)
-            print("[" + s.decode('ascii') + "]")
+            if s.endswith((b'\r', b'\n')):
+                print("[" + s.decode('ascii').strip() + "]")
+            else:
+                print("ERROR: malformed response", s)
             if len(s) == 4:
                 r = int(s, 16)
                 return (r, False)
