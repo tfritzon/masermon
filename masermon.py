@@ -69,7 +69,7 @@ def poll_chan(ser, chan):
                 ser.write(c.encode())
                 r = ser.read()
                 print(r.decode('ascii'), end='')
-            print()
+            print(': ', end='')
             s = ser.read(size=4)
             if s.endswith((b'\r', b'\n')):
                 print("[" + s.decode('ascii').strip() + "]")
