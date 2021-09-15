@@ -4,6 +4,7 @@ import sys
 from influxdb import InfluxDBClient
 import datetime
 import json
+import traceback
 
 MASERID = "maserdata"
 SERIALDEVICE = "/dev/ttyUSB0"
@@ -77,6 +78,7 @@ def poll_chan(ser, chan):
                 print("Timeout")
         except:
             print("%s Channel %s Line Noise: %s" % (datetime.datetime.utcnow().isoformat(), chan, s))
+            traceback.print_exc()
             time.sleep(0.01)
     return (-1, True)
 
