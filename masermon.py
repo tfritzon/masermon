@@ -92,9 +92,13 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
     client.switch_database('EFOStest')
     fields = {}
     s = ''
+    print("Syncing ...")
     while len(s) < 10:
         ser.write('F')
         s = ser.read(size=10)
+        if len(s) < 10:
+            print(s)
+    print("Synthesizer f:", s.decode('ascii').strip())
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
         for channel in channels:
