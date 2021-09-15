@@ -69,7 +69,7 @@ def poll_chan(ser, chan):
                 r = ser.read()
                 sys.stderr.write(r)
             s = ser.read(size=4)
-            sys.stderr.write(s)
+            sys.stderr.write("[" + s + "]")
             if len(s) == 4:
                 r = int(s, 16)
                 return (r, False)
@@ -77,7 +77,7 @@ def poll_chan(ser, chan):
                 print("Timeout")
         except:
             print("%s Channel %s Line Noise: %s" % (datetime.datetime.utcnow().isoformat(), chan, s))
-        time.sleep(0.01)
+            time.sleep(0.01)
     return (-1, True)
 
 with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
