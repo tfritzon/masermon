@@ -64,7 +64,7 @@ channels = [
 def poll_chan(ser, chan):
     cmd = "D%02d" % chan
     for i in range(0, 5):
-        buf = ''
+        buf = b''
         try:
             for c in cmd:
                 ser.write(c.encode())
