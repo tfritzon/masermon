@@ -73,13 +73,13 @@ def poll_chan(ser, chan):
             s = ser.read(size=4)
             if s.endswith((b'\r', b'\n')):
                 print("[" + s.decode('ascii').strip() + "]")
+                if len(s) == 4:
+                    r = int(s, 16)
+                    return (r, False)
+                else:
+                    print("Timeout")
             else:
                 print("ERROR: malformed response", s)
-            if len(s) == 4:
-                r = int(s, 16)
-                return (r, False)
-            else:
-                print("Timeout")
         except:
             print("%s Channel %s Line Noise: %s" % (datetime.datetime.utcnow().isoformat(), chan, s))
             traceback.print_exc()
