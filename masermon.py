@@ -85,6 +85,7 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
     client.create_database('EFOStest')
     client.switch_database('EFOStest')
     fields = {}
+    ser.read(size=16)
     while True:
         timestamp = datetime.datetime.utcnow().isoformat()
         for channel in channels:
