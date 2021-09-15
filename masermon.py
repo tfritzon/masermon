@@ -94,7 +94,7 @@ with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
     s = ''
     print("Syncing ...")
     while len(s) < 10:
-        ser.write('F')
+        ser.write('F'.encode())
         s = ser.read(size=10)
         if len(s) < 10:
             print(s)
