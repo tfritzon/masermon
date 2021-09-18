@@ -5,21 +5,9 @@ from influxdb import InfluxDBClient
 import datetime
 import json
 import traceback
+import click
 
-MASERID = "maserdata"
-SERIALDEVICE = "/dev/ttyUSB0"
-BAUDRATE = 9600
-
-if len(sys.argv) > 1:
-    MASERID = sys.argv[1]
-
-if len(sys.argv) > 2:
-    SERIALDEVICE = sys.argv[2]
-
-if len(sys.argv) > 3:
-    BAUDRATE = int(sys.argv[3])
-
-channels = [
+efosb_channels = [
     { "chan": 0,    "name": "InputA_U",       "signed": -128,   "scale": 0.230,   "offset": 0    },
     { "chan": 1,    "name": "InputA_I",       "signed": -128,   "scale": 0.096,   "offset": 0    },
     { "chan": 2,    "name": "InputB_U",       "signed": -128,   "scale": 0.230,   "offset": 0    },
@@ -61,7 +49,7 @@ channels = [
 #    s = f.read()
 #    channels = json.loads(s)
 
-def poll_chan(ser, chan):
+def efosb_poll_chan(ser, chan):
     cmd = "D%02d" % chan
     for i in range(0, 5):
         buf = b''
@@ -87,35 +75,57 @@ def poll_chan(ser, chan):
             time.sleep(0.01)
     return (-1, True)
 
-with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
-    client = InfluxDBClient(host='localhost', port=8086)
-    client.create_database('EFOStest')
-    client.switch_database('EFOStest')
-    fields = {}
-    s = ''
-    print("Syncing ...")
-    while len(s) < 10:
-        ser.write('F'.encode())
-        s = ser.read(size=10)
-        if len(s) < 10:
-            print(s)
-    print("Synthesizer f:", s.decode('ascii').strip())
-    while True:
-        timestamp = datetime.datetime.utcnow().isoformat()
-        for channel in channels:
-            val, err = poll_chan(ser, channel['chan'])
-            if not err:
-                fields[channel['name']] = (val + channel['signed']) * channel['scale'] + channel['offset']
-        json_body = [
-            {
-                "measurement": MASERID,
-                "tags": {
-                    "masetype": "EFOS-B",
-                    "maser": "EFOS10"
-                },
-                "time": timestamp,
-                "fields": fields
-            }
-        ]
-        client.write_points(json_body)
-        time.sleep(10)
+def efosb_process(MASERID, SERIALDEVICE, BAUDRATE):
+    with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
+        client = InfluxDBClient(host='localhost', port=8086)
+        client.create_database('EFOStest')
+        client.switch_database('EFOStest')
+        fields = {}
+        s = ''
+        print("Syncing ...")
+        while len(s) < 10:
+            ser.write('F'.encode())
+            s = ser.read(size=10)
+            if len(s) < 10:
+                print(s)
+        print("Synthesizer f:", s.decode('ascii').strip())
+        while True:
+            timestamp = datetime.datetime.utcnow().isoformat()
+            for channel in efosb_channels:
+                val, err = efosb_poll_chan(ser, channel['chan'])
+                if not err:
+                    fields[channel['name']] = (val + channel['signed']) * channel['scale'] + channel['offset']
+            json_body = [
+                {
+                    "measurement": MASERID,
+                    "tags": {
+                        "masetype": "EFOS-B",
+                        "maser": "EFOS10"
+                     },
+                    "time": timestamp,
+                    "fields": fields
+                }
+            ]
+            client.write_points(json_body)
+            time.sleep(10)
+
+@click.group()
+@click.option('--baudrate', default=9600 , help="Serial port baudrate (default 9600)")
+@click.option('--device', default='/dev/ttyUSB0', help="Serial port device (default /dev/ttyUSB0")
+@click.option('--maserid', default='maserdata', help="InfluxDB data name for maser data (default maserdata)")
+@click.pass_context
+def maser(ctx, device, baudrate, maserid):
+    ctx.ensure_object(dict)
+    ctx.obj['device'] = device
+    ctx.obj['baudrate'] = baudrate
+    ctx.obj['maserid'] = maserid
+
+@maser.command()
+@click.pass_context
+def efosb(ctx):
+    "EFOS-B protocol"
+    print("EFOS-B protocol for %s using device % at rate %i" % (ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate']))
+    efosb_process(ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate'])
+    
+if __name__ == '__main__':
+    maser(obj={})
