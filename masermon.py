@@ -75,7 +75,7 @@ def efosb_poll_chan(ser, chan):
             time.sleep(0.01)
     return (-1, True)
 
-def efosb_process(DATABASE, MASERID, SERIALDEVICE, BAUDRATE):
+def efosb_process(DATABASE, MASERID, SERIALDEVICE, BAUDRATE, LOGRATE):
     with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
         client = InfluxDBClient(host='localhost', port=8086)
         client.create_database(DATABASE)
@@ -107,27 +107,29 @@ def efosb_process(DATABASE, MASERID, SERIALDEVICE, BAUDRATE):
                 }
             ]
             client.write_points(json_body)
-            time.sleep(10)
+            time.sleep(LOGRATE)
 
 @click.group()
 @click.option('--baudrate', default=9600 , help="Serial port baudrate (default 9600)")
 @click.option('--device', default='/dev/ttyUSB0', help="Serial port device (default /dev/ttyUSB0")
 @click.option('--database', default='EFOStest', help="InfluxDB database name (default EFOStest)")
 @click.option('--maserid', default='maserdata', help="InfluxDB data name for maser data (default maserdata)")
+@click.option('--lograte', default=10, help="Log-rate in seconds (default 10 s)")
 @click.pass_context
-def maser(ctx, device, baudrate, database, maserid):
+def maser(ctx, device, baudrate, database, maserid, lograte):
     ctx.ensure_object(dict)
     ctx.obj['device'] = device
     ctx.obj['baudrate'] = baudrate
     ctx.obj['database'] = database
     ctx.obj['maserid'] = maserid
+    ctx.obj['lograte'] = lograte
 
 @maser.command()
 @click.pass_context
 def efosb(ctx):
     "EFOS-B protocol"
     print("EFOS-B protocol for %s using device % at rate %i" % (ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate']))
-    efosb_process(ctx.obj['database'], ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate'])
+    efosb_process(ctx.obj['database'], ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate'], ctx.obj['lograte'])
     
 if __name__ == '__main__':
     maser(obj={})
