@@ -6,6 +6,7 @@ import datetime
 import json
 import traceback
 import click
+import binascii
 
 efosb_channels = [
     { "chan": 0,    "name": "InputA_U",       "signed": -128,   "scale": 0.230,   "offset": 0    },
@@ -109,6 +110,18 @@ def efosb_process(DATABASE, MASERID, SERIALDEVICE, BAUDRATE, LOGRATE):
             client.write_points(json_body)
             time.sleep(LOGRATE)
 
+def vch1006_process(DATABASE, MASERID, SERIALDEVICE, BAUDRATE, LOGRATE):
+    with serial.Serial(SERIALDEVICE, BAUDRATE, timeout=2) as ser:
+       print("Test connection")
+       ser.write(b'\x01')
+       ser.write(b'\x41')
+       ser.write(b'\x00')
+       ser.write(b'\x00')
+       ser.write(b'\x00')
+       buf = ser.read(189)
+       s = binascii.hexlify(bytearray(buf))
+       print(s)
+            
 @click.group()
 @click.option('--baudrate', default=9600 , help="Serial port baudrate (default 9600)")
 @click.option('--device', default='/dev/ttyUSB0', help="Serial port device (default /dev/ttyUSB0")
@@ -127,9 +140,16 @@ def maser(ctx, device, baudrate, database, maserid, lograte):
 @maser.command()
 @click.pass_context
 def efosb(ctx):
-    "EFOS-B protocol"
+    "EFOS-B active maser protocol"
     print("EFOS-B protocol for %s using device % at rate %i" % (ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate']))
     efosb_process(ctx.obj['database'], ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate'], ctx.obj['lograte'])
+
+@maser.command()
+@click.pass_context
+def vch1006(ctx):
+    "VCH1006 passive maser protocol"
+    print("VCH1006 protocol for %s using device % at rate %i" % (ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate']))
+    vch1006_process(ctx.obj['database'], ctx.obj['maserid'], ctx.obj['device'], ctx.obj['baudrate'], ctx.obj['lograte'])
     
 if __name__ == '__main__':
     maser(obj={})
